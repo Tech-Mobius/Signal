@@ -21,6 +21,7 @@ import UsernamePrompt from './components/UsernamePrompt';
 import VerificationModal from './components/VerificationModal';
 import SettingsPanel from './components/SettingsPanel';
 import FaultyTerminal from './components/FaultyTerminal';
+import { AsciiArt } from './components/AsciiArt';
 
 import { useIdentity } from './hooks/useIdentity';
 import { usePeers } from './hooks/usePeers';
@@ -260,6 +261,10 @@ export default function App() {
           pageLoadAnimation={true}
           brightness={0.85}
         />
+        {/* Layered AsciiArt (ASCII flower) on top of the WebGL grid */}
+        <div style={{ position: 'absolute', inset: 0, zIndex: 1, opacity: 1, mixBlendMode: 'normal', pointerEvents: 'none' }}>
+          <AsciiArt className="h-full w-full" />
+        </div>
       </div>
 
       {/* Title Bar */}

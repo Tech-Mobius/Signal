@@ -1,9 +1,9 @@
 {
-  "name": "signum",
+  "name": "Signum",
   "version": "1.0.0",
   "description": "Offline-first P2P emergency communication tool",
   "main": "dist/main/index.js",
-  "author": "Antigravity",
+  "author": "Tech Mobius",
   "license": "MIT",
   "scripts": {
     "dev": "node scripts/dev.js",
