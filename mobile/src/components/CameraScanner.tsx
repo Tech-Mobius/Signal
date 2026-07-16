@@ -8,7 +8,6 @@ export default function CameraScanner({ onScan, onClose }: { onScan: (text: stri
   
   const [expectedTotalSize, setExpectedTotalSize] = useState<number | null>(null);
   const [receivedBlocks, setReceivedBlocks] = useState<Record<number, string>>({});
-  const [payloadSize, setPayloadSize] = useState<number | null>(null);
 
   if (!permission) {
     return (
@@ -38,30 +37,12 @@ export default function CameraScanner({ onScan, onClose }: { onScan: (text: stri
   }
 
   const decodeQRText = (qrText: string) => {
-    const firstComma = qrText.indexOf(',');
-    if (firstComma === -1) return null; 
+    const match = qrText.match(/^(\d+)\|(\d+)\|(.*)$/);
+    if (!match) return null;
 
-    const checksumStr = qrText.substring(0, firstComma);
-    const checksum = parseInt(checksumStr, 10);
-    if (isNaN(checksum)) return null;
-
-    const remainder = qrText.substring(firstComma);
-    let expectedChecksum = 0;
-    for (let i = 0; i < remainder.length; i++) {
-      expectedChecksum += remainder.charCodeAt(i);
-    }
-    expectedChecksum %= 256;
-
-    if (checksum !== expectedChecksum) return null;
-
-    const parts = remainder.split(',');
-    if (parts.length < 4) return null;
-
-    const offset = parseInt(parts[1], 10);
-    const totalSize = parseInt(parts[2], 10);
-    const payload = parts.slice(3).join(',');
-
-    if (isNaN(offset) || isNaN(totalSize)) return null;
+    const offset = parseInt(match[1], 10);
+    const totalSize = parseInt(match[2], 10);
+    const payload = match[3];
 
     return { offset, totalSize, payload };
   };
@@ -81,7 +62,6 @@ export default function CameraScanner({ onScan, onClose }: { onScan: (text: stri
 
     if (expectedTotalSize === null) {
       setExpectedTotalSize(totalSize);
-      setPayloadSize(payload.length);
     } else if (totalSize !== expectedTotalSize) {
       return;
     }
@@ -90,10 +70,9 @@ export default function CameraScanner({ onScan, onClose }: { onScan: (text: stri
       if (prev[offset]) return prev; 
       const next = { ...prev, [offset]: payload };
       
-      let currentSize = 0;
-      Object.values(next).forEach(p => currentSize += p.length);
+      const numBlocksReceived = Object.keys(next).length;
       
-      if (currentSize === totalSize) {
+      if (numBlocksReceived === totalSize) {
         setScanned(true);
         const sortedOffsets = Object.keys(next).map(Number).sort((a, b) => a - b);
         let fullMessage = '';
@@ -107,7 +86,7 @@ export default function CameraScanner({ onScan, onClose }: { onScan: (text: stri
   };
 
   const numBlocksReceived = Object.keys(receivedBlocks).length;
-  const numBlocksTotal = (expectedTotalSize && payloadSize) ? Math.ceil(expectedTotalSize / payloadSize) : 0;
+  const numBlocksTotal = expectedTotalSize || 0;
   const progressPercent = numBlocksTotal > 0 ? Math.round((numBlocksReceived / numBlocksTotal) * 100) : 0;
 
   return (

@@ -11,7 +11,7 @@ interface AnimatedQRCodeProps {
 
 export default function AnimatedQRCode({ 
   value, 
-  payloadSize = 300, 
+  payloadSize = 200, 
   intervalMs = 150,
   size = 200 
 }: AnimatedQRCodeProps) {
@@ -27,16 +27,22 @@ export default function AnimatedQRCode({
     return () => clearInterval(timer);
   }, [numQRCodes, intervalMs]);
 
+  if (numQRCodes <= 1) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.qrWrapper}>
+          <QRCodeSVG value={value} size={size} color="#1E2328" backgroundColor="#fff" />
+        </View>
+        <View style={styles.controlsRow}>
+          <Text style={styles.counterText}>Single Block</Text>
+        </View>
+      </View>
+    );
+  }
+
   const offset = currentIndex * payloadSize;
   const payloadChunk = value.substring(offset, offset + payloadSize);
-  
-  let qrText = `,${offset},${value.length},${payloadChunk}`;
-  let checksum = 0;
-  for (let i = 0; i < qrText.length; i++) {
-    checksum += qrText.charCodeAt(i);
-  }
-  checksum = checksum % 256;
-  qrText = `${checksum}${qrText}`;
+  const qrText = `${currentIndex}|${numQRCodes}|${payloadChunk}`;
 
   return (
     <View style={styles.container}>
@@ -45,7 +51,7 @@ export default function AnimatedQRCode({
       </View>
       <View style={styles.controlsRow}>
         <Text style={styles.counterText}>
-          {numQRCodes > 1 ? `Block ${currentIndex + 1} of ${numQRCodes}` : 'Single Block'}
+          Block {currentIndex + 1} of {numQRCodes}
         </Text>
       </View>
     </View>
