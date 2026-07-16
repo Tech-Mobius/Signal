@@ -412,30 +412,6 @@ ipcMain.on('settings:set-turn-config', (_event, config) => {
   sendDebugLog('Settings', 'TURN configuration updated');
 });
 
-ipcMain.handle('file:save-dialog', async (_event, { defaultName, content }) => {
-  if (!mainWindow) return false;
-  const { filePath } = await dialog.showSaveDialog(mainWindow, {
-    defaultPath: defaultName,
-    filters: [{ name: 'Signum Connection File', extensions: ['sig'] }]
-  });
-  if (filePath) {
-    fs.writeFileSync(filePath, content, 'utf8');
-    return true;
-  }
-  return false;
-});
-
-ipcMain.handle('file:open-dialog', async () => {
-  if (!mainWindow) return null;
-  const { filePaths } = await dialog.showOpenDialog(mainWindow, {
-    filters: [{ name: 'Signum Connection File', extensions: ['sig'] }],
-    properties: ['openFile']
-  });
-  if (filePaths && filePaths.length > 0) {
-    return fs.readFileSync(filePaths[0], 'utf8');
-  }
-  return null;
-});
 
 ipcMain.handle('peer:get-fingerprint', async (_event, { peerId }) => {
   const existing = cryptoKeysRepo.getVerifiedPeer(peerId);

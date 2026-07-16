@@ -395,31 +395,6 @@ electron_1.ipcMain.on('settings:set-turn-config', (_event, config) => {
         settingsRepo.setConfig('turn_credential', config.credential);
     sendDebugLog('Settings', 'TURN configuration updated');
 });
-electron_1.ipcMain.handle('file:save-dialog', async (_event, { defaultName, content }) => {
-    if (!mainWindow)
-        return false;
-    const { filePath } = await electron_1.dialog.showSaveDialog(mainWindow, {
-        defaultPath: defaultName,
-        filters: [{ name: 'Signum Connection File', extensions: ['sig'] }]
-    });
-    if (filePath) {
-        fs_1.default.writeFileSync(filePath, content, 'utf8');
-        return true;
-    }
-    return false;
-});
-electron_1.ipcMain.handle('file:open-dialog', async () => {
-    if (!mainWindow)
-        return null;
-    const { filePaths } = await electron_1.dialog.showOpenDialog(mainWindow, {
-        filters: [{ name: 'Signum Connection File', extensions: ['sig'] }],
-        properties: ['openFile']
-    });
-    if (filePaths && filePaths.length > 0) {
-        return fs_1.default.readFileSync(filePaths[0], 'utf8');
-    }
-    return null;
-});
 electron_1.ipcMain.handle('peer:get-fingerprint', async (_event, { peerId }) => {
     const existing = cryptoKeysRepo.getVerifiedPeer(peerId);
     return existing ? { fingerprint: existing.fingerprint, trusted: existing.verified_by === 'user' } : null;
