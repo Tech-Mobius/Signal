@@ -1,4 +1,4 @@
-# Signal — Air-Gapped P2P Emergency Mesh Net
+# Signal | Air-Gapped P2P Emergency Mesh Net
 
 Signal is a hyper-resilient, offline-first, peer-to-peer emergency communication tool built for situations where cell towers and the internet are completely disabled. By utilizing completely air-gapped signaling via QR codes, it establishes direct WebRTC connections between Desktop and Mobile devices without ever needing a central server or local network infrastructure for the initial handshake.
 
